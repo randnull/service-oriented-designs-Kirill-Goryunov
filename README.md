@@ -1,1 +1,3 @@
-# service-oriented-designs-Kirill-Goryunov
+# Горюнов Кирилл Олегович
+# Группа 2110
+# Вариант: Социальная сеть
