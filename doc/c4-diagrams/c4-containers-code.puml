@@ -4,6 +4,7 @@
 !include DEVICONS/python.puml
 !include DEVICONS/postgresql.puml
 !include DEVICONS/mongodb.puml
+!include DEVICONS/go.puml
 !include <cloudinsight/kafka>
 
 
@@ -18,7 +19,7 @@ Container(interface, "Пользовательский интерфейс")
 ' Контейнеры
 Container(main_service, "Главный сервис", "Python", "Клиентское Api, регистация, аутентификация", "python")
 Container(statistic_service, "Сервис статистики", "Python", "Подсчет лайков и просмотров", "python")
-Container(post_service, "Сервис постов и комментариев", "Python", "Публикация и просмотр контента", "python")
+Container(post_service, "Сервис постов и комментариев", "Golang", "Публикация и просмотр контента", "go")
 
 ContainerDb(UserDB, "users_postgres", "Postgres", "Хранение пользователей", "postgresql")
 ContainerDb(StatsDB, "stats_clickhouse", "Clickhouse", "Статистика")

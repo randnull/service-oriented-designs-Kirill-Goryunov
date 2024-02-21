@@ -1,6 +1,9 @@
 @startuml C4_context
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
+
+title Архитектура социальной сети
+
 ' Пользователи
 Person(User, "Пользователь")
 
@@ -9,12 +12,8 @@ System(interface, "Пользовательский интерфейс")
 
 ' Контейнеры
 System(main_service, "Главный сервис")
-System(statistic_service, "Сервис статистики")
-System(post_service, "Сервис постов и комментариев")
 
 ' Связи
 Rel(User, interface, "Создает/просматривает посты, оставляет комментарии, ставит лайки")
 Rel(interface, main_service, "Вызывает методы")
-Rel(main_service, statistic_service, "Работа со статистикой")
-Rel(main_service, post_service, "Работа с постами и комметариями")
 @enduml
