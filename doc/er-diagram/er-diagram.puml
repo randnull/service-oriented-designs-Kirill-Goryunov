@@ -1,0 +1,51 @@
+@startuml er-diagram
+
+skinparam linetype ortho
+
+entity "users" as user_table {
+  *id : INTEGER <<PK>>
+  --
+  *username : VARCHAR
+  *password : VARCHAR
+  *name : VARCHAR
+  *surname: VARCHAR
+  *email : VARCHAR
+  *birthday : DATE
+  *phone : INTEGER
+  *created_at : TIMESTAMP
+}
+
+entity "posts" as post_table {
+  *id : INTEGER <<PK>>
+  --
+  *user_id : INTEGER <<FK>>
+  *title : VARCHAR
+  *body : VARCHAR
+  *created_at : TIMESTAMP
+}
+
+entity "comments" as comment_table {
+  *id : INTEGER <<PK>>
+  --
+  *post_id : INTEGER <<FK>>
+  comment_id : INTEGER <<FK>>
+  *user_id : INTEGER <<FK>>
+  *body: VARCHAR
+  *created_at : TIMESTAMP
+}
+
+entity "statistics" as statistic_table {
+  *id : INTEGER <<PK>>
+  --
+  *post_id : INTEGER <<FK>>
+  *watch_count: VARCHAR
+  *like_count: VARCHAR
+}
+
+post_table ||..o{ user_table
+comment_table ||..o{ user_table
+comment_table ||..o{ post_table
+comment_table ||..o{ comment_table
+statistic_table ||..o{ post_table
+
+@enduml

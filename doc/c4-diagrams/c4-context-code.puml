@@ -1,0 +1,15 @@
+@startuml C4_context
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+
+title Архитектура социальной сети
+
+' Пользователи
+Person(User, "Пользователь")
+
+'Интерфейс
+System(social_network, "Социальная сеть")
+
+' Связи
+Rel(User, social_network, "Создает/просматривает посты, оставляет комментарии, ставит лайки")
+@enduml
