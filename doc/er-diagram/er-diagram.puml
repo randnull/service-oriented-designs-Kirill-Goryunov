@@ -7,11 +7,11 @@ entity "users" as user_table {
   --
   *username : VARCHAR
   *password : VARCHAR
-  *name : VARCHAR
-  *surname: VARCHAR
-  *email : VARCHAR
-  *birthday : DATE
-  *phone : INTEGER
+  name : VARCHAR
+  surname: VARCHAR
+  email : VARCHAR
+  birthday : VARCHAR
+  phone : VARCHAR
   *created_at : TIMESTAMP
 }
 
