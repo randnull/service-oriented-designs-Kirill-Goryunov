@@ -83,7 +83,7 @@ async def get_user(token: str = Depends(oauth2_scheme), s: AsyncSession = Depend
 
 @app.get("/profile", tags=["user"])
 async def get_current_user(current_user: UserModel = Depends(get_user)):
-    return current_user
+    return current_user.dict(exclude={"password"})
 
 
 @app.put("/update", tags=["user"])
