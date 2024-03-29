@@ -1,0 +1,24 @@
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+    
+    <changeSet author="k.goryunov" id="add-new-user">
+        <insert tableName="users">
+            <column name="username" value="Ivan213"/>
+            <column name="password" value="Ivan2000"/>
+            <column name="name" value="Ivan"/>
+            <column name="surname" value="Ivanov"/>
+            <column name="email" value="ivan@gmail.com"/>
+            <column name="birthday" value="12.03.2000"/>
+            <column name="phone" value="8821391231"/>
+            <column name="created_at" value="2002-03-15"/>
+        </insert>
+    </changeSet>
+    
+</databaseChangeLog>
