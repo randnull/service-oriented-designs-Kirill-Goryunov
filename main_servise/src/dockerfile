@@ -1,7 +1,12 @@
 FROM python:3.10
 
-WORKDIR /app_main_servise
+WORKDIR /app
 
-COPY . .
+COPY main_servise/src/ /app
+COPY main_servise/src/grpc_functions/ /app
+
+WORKDIR /app
 
 RUN pip install -r requirements.txt
+
+ENV PYTHONPATH=/app

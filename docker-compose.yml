@@ -12,6 +12,14 @@ services:
       - 5432:5432
     networks:
       - api-network
+    
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    networks:
+      - api-network
 
   pgadmin:
     container_name: pgadmin
@@ -39,11 +47,15 @@ services:
 
   main-servise-fastapi:
     container_name: "main-servise-fastapi"
-    build: ./main_servise/src
+    build: 
+      context: ./
+      dockerfile: ./main_servise/src/dockerfile
     environment:
       POSTGRES_DB: users
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
+      GRPC_PORT: 50051
+      GRPC_HOST: posts-grpc
     ports:
       - "5005:5000"
     depends_on:
@@ -51,6 +63,18 @@ services:
     networks:
       - api-network
     command: uvicorn main:app --host 0.0.0.0 --port 5000 --reload
+
+  posts-grpc:
+    container_name: "posts-grpc"
+    build: ./posts_servise
+    environment:
+      PORT_SERVISE: 50051
+      PORT_DATABASE: 27017
+      HOST_DATABASE: mongodb
+    ports:
+      - "50051:50051"
+    networks:
+      - api-network
 
 networks:
   api-network:

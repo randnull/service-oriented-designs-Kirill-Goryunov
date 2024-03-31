@@ -1,0 +1,9 @@
+FROM golang:alpine
+
+WORKDIR /Posts
+
+COPY . .
+
+RUN go build -o postapp ./cmd/main.go
+
+CMD ["./postapp"]

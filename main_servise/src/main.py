@@ -1,10 +1,14 @@
-from fastapi import FastAPI, Depends, Response
+from fastapi import FastAPI, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.responses import JSONResponse
 
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
-from dotenv import load_dotenv
+import os
+
+import grpc
+import posts_pb2
+import posts_pb2_grpc
 
 from database_connection.base import get_session
 
@@ -12,13 +16,15 @@ from dto_table.user_dto import UserModel
 from dto_table.register_dto import RegisterModel
 from dto_table.update_dto import UpdateModel
 from dao_table.user_dao import User
+from dto_table.posts_dto import NewPostModel, PostModel, AllPosts
 
 from repository.repo import user_repository
 
 from auth.auth import create_jwt
 from auth.auth import decode_jwt
 
-import json
+import datetime
+
 tags = [
     {
         "name": "login&register",
@@ -27,12 +33,20 @@ tags = [
     {
         "name": "user",
         "description": "Operations with user profile"
+    },
+    {
+        "name": "posts",
+        "description": "Operations with posts"
     }
 ]
 
+grpc_host = os.environ['GRPC_HOST']
+grpc_port = os.environ['GRPC_PORT']
+
+grpc_channel = grpc.insecure_channel(f'{grpc_host}:{grpc_port}')
+grpc_stub = posts_pb2_grpc.PostsServiceStub(grpc_channel)
 
 app = FastAPI(openapi_tags=tags)
-
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -95,3 +109,85 @@ async def update(new_info: UpdateModel, s: AsyncSession = Depends(get_session), 
     await user_repository.update_info(s, id, to_update)
 
     return JSONResponse(content={"message": "Updated"}, status_code=200)
+
+
+@app.post("/posts/new", tags=["posts"])
+async def newpost(new_post: NewPostModel, s: AsyncSession = Depends(get_session), current_user: UserModel = Depends(get_user)):
+    id = await user_repository.get_id_by_username(s, current_user.username)
+
+    response = grpc_stub.CreatePost(posts_pb2.CreateRequest(user_id=id, title=new_post.title, body=new_post.body))
+    
+    return JSONResponse(content={"message": f"id = {response.id}"}, status_code=201)
+
+
+@app.post("/posts/delete/{post_id}", tags=["posts"])
+async def deletepost(post_id: str, s: AsyncSession = Depends(get_session), current_user: UserModel = Depends(get_user)):
+    id = await user_repository.get_id_by_username(s, current_user.username)
+
+    response = grpc_stub.DeletePost(posts_pb2.DeleteRequest(id=post_id, user_id=id))
+    
+    return JSONResponse(content={"message": "Deleted"}, status_code=204)
+
+
+@app.get("/posts/{post_id}", tags=["posts"])
+async def getpost(post_id: str, s: AsyncSession = Depends(get_session), current_user: UserModel = Depends(get_user)):
+    id = await user_repository.get_id_by_username(s, current_user.username)
+
+    response = grpc_stub.GetByIdPost(posts_pb2.GetById(id=post_id, user_id=id))
+
+    if response.status != 0:
+        return JSONResponse(content={"message": f"Not Found"}, status_code=404)
+
+    time_seconds = response.created_at.seconds + response.created_at.nanos / 1e9
+    
+    response_dto = PostModel(
+        id=response.id,
+        user_id=response.user_id,
+        title=response.title,
+        body=response.body,
+        created_at=datetime.datetime.fromtimestamp(time_seconds)
+    )
+
+    return response_dto
+
+
+@app.put("/posts/update/{post_id}", tags=["posts"])
+async def updatepost(post_id: str, update_post: NewPostModel, s: AsyncSession = Depends(get_session), current_user: UserModel = Depends(get_user)):
+    id = await user_repository.get_id_by_username(s, current_user.username)
+
+    response = grpc_stub.UpdatePost(posts_pb2.UpdateRequest(id=post_id, user_id=id, title=update_post.title, body=update_post.body))
+    
+    if int(response.status) != 0:
+        return JSONResponse(content={"message": f"Not Found"}, status_code=404)
+
+    return JSONResponse(content={"message": f"Updated"}, status_code=200)
+
+
+@app.post("/posts", tags=["posts"])
+async def getallposts(page_config: AllPosts, s: AsyncSession = Depends(get_session), current_user: UserModel = Depends(get_user)):
+    if page_config.page_size <= 0:
+        return JSONResponse(content={"message": f"Page size equal/less than zero!"}, status_code=400)
+    if page_config.page_number <= 0:
+        return JSONResponse(content={"message": f"Page number equal/less than zero!"}, status_code=400)
+
+    id = await user_repository.get_id_by_username(s, current_user.username)
+
+    response = grpc_stub.GetAllPost(posts_pb2.GetAllRequest(user_id=id, page_size=page_config.page_size, page_number=page_config.page_number))
+
+    posts_from_grpc = response.posts
+
+    posts_list = list()
+
+    for post in posts_from_grpc:
+        time_seconds = post.created_at.seconds + post.created_at.nanos / 1e9
+
+        response_dto = PostModel(
+            id=post.id,
+            user_id=post.user_id,
+            title=post.title,
+            body=post.body,
+            created_at=datetime.datetime.fromtimestamp(time_seconds)
+        )
+        posts_list.append(response_dto)
+    
+    return {"number_posts": f"{len(posts_list)}", "page": f"{page_config.page_number}"}, posts_list
