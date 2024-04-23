@@ -120,7 +120,7 @@ async def newpost(new_post: NewPostModel, s: AsyncSession = Depends(get_session)
     return JSONResponse(content={"message": f"id = {response.id}"}, status_code=201)
 
 
-@app.post("/posts/delete/{post_id}", tags=["posts"])
+@app.delete("/posts/{post_id}", tags=["posts"])
 async def deletepost(post_id: str, s: AsyncSession = Depends(get_session), current_user: UserModel = Depends(get_user)):
     id = await user_repository.get_id_by_username(s, current_user.username)
 
@@ -151,7 +151,7 @@ async def getpost(post_id: str, s: AsyncSession = Depends(get_session), current_
     return response_dto
 
 
-@app.put("/posts/update/{post_id}", tags=["posts"])
+@app.put("/posts/{post_id}", tags=["posts"])
 async def updatepost(post_id: str, update_post: NewPostModel, s: AsyncSession = Depends(get_session), current_user: UserModel = Depends(get_user)):
     id = await user_repository.get_id_by_username(s, current_user.username)
 
