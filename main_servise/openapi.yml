@@ -1,7 +1,7 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: Main Service
-  version: 0.1.0
+  version: 0.2.0
 servers:
   - url: https://localhost:5005
 paths:
@@ -29,7 +29,7 @@ paths:
             application/json:
               schema:
                 "$ref": "#/components/schemas/HTTPValidationError"
-        '404':
+        '409':
           description: Username already taken
           content:
             application/json:
@@ -113,8 +113,204 @@ paths:
               schema: {}
       security:
       - OAuth2PasswordBearer: []
+  "/posts/new":
+    post:
+      tags:
+      - posts
+      summary: Newpost
+      operationId: newpost_posts_new_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/NewPostModel"
+        required: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: {}
+      security:
+      - OAuth2PasswordBearer: []
+  "/posts/delete/{post_id}":
+    post:
+      tags:
+      - posts
+      summary: Deletepost
+      operationId: deletepost_posts_delete__post_id__post
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: post_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Post Id
+      responses:
+        '204':
+          description: No content
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: {}
+        
+  "/posts/{post_id}":
+    get:
+      tags:
+      - posts
+      summary: Getpost
+      operationId: getpost_posts__post_id__get
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: post_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Post Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema: {}
+  "/posts/update/{post_id}":
+    put:
+      tags:
+      - posts
+      summary: Updatepost
+      operationId: updatepost_posts_update__post_id__put
+      security:
+      - OAuth2PasswordBearer: []
+      parameters:
+      - name: post_id
+        in: path
+        required: true
+        schema:
+          type: string
+          title: Post Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/NewPostModel"
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema: {}
+              
+  "/posts":
+    post:
+      tags:
+      - posts
+      summary: Getallposts
+      operationId: getallposts_posts_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/AllPosts"
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/HTTPValidationError"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema: {}
+      security:
+      - OAuth2PasswordBearer: []
 components:
   schemas:
+    AllPosts:
+      properties:
+        page_size:
+          anyOf:
+          - type: integer
+          title: Page Size
+        page_number:
+          anyOf:
+          - type: integer
+          title: Page Number
+      type: object
+      required:
+      - page_size
+      - page_number
+      title: AllPosts
     Body_auth_user_login_post:
       properties:
         grant_type:
@@ -154,6 +350,21 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    NewPostModel:
+      properties:
+        title:
+          anyOf:
+          - type: string
+          title: Title
+        body:
+          anyOf:
+          - type: string
+          title: Body
+      type: object
+      required:
+      - title
+      - body
+      title: NewPostModel
     RegisterModel:
       properties:
         username:
@@ -224,3 +435,5 @@ tags:
   description: Operations with registration and authentication
 - name: user
   description: Operations with user profile
+- name: posts
+  description: Operations with posts
