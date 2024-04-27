@@ -1,14 +1,14 @@
 package repository
 
-
 import (
-	"log"
 	"context"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo"
+	"log"
+
 	"github.com/randnull/service-oriented-designs-Kirill-Goryunov/posts_servise/modals"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 
@@ -82,7 +82,7 @@ func (storage *PostsRepository) GetById(id string, user_id int) (*modals.PostDat
         return nil, err
     }
 
-	filter := bson.M{"_id": objectID, "userid": user_id}
+	filter := bson.M{"_id": objectID} // "userid": user_id
 
 	var post modals.PostDataWithId
 
