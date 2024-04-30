@@ -294,6 +294,62 @@ paths:
               schema: {}
       security:
       - OAuth2PasswordBearer: []
+  '/action/view/{post_id}':
+    post:
+      tags:
+        - actions
+        - actions
+      summary: Send View
+      operationId: send_view_action_view__post_id__post
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Post Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  '/action/like/{post_id}':
+    post:
+      tags:
+        - actions
+        - actions
+      summary: Send View
+      operationId: send_view_action_like__post_id__post
+      security:
+        - OAuth2PasswordBearer: []
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Post Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
 components:
   schemas:
     AllPosts:

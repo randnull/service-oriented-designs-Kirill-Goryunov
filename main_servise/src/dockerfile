@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY main_servise/src/ /app
 COPY main_servise/src/grpc_functions/ /app
+COPY common /app/common
 
 WORKDIR /app
 

@@ -22,7 +22,7 @@ Container(statistic_service, "Сервис статистики", "Python", "П�
 Container(post_service, "Сервис постов и комментариев", "Golang", "Публикация и просмотр контента", "go")
 
 ContainerDb(UserDB, "users_postgres", "Postgres", "Хранение пользователей", "postgresql")
-ContainerDb(StatsDB, "stats_clickhouse", "Clickhouse", "Статистика")
+ContainerDb(StatsDB, "stats_clickhouse", "Postgres", "Статистика", "postgresql")
 ContainerDb(PostsDB, "posts_mongo", "Mongo", "Хранение постов и комментариев", "mongodb")
 ContainerQueue(stats, "topics", "kafka", "брокер сообщений о дейтсвиях пользователя", "kafka")
 

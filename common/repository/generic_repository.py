@@ -34,3 +34,28 @@ class Repository(Generic[T]):
         resp = await s.execute(select(self.model).where(self.model.username == username))
         obj = resp.scalars().one_or_none()
         return getattr(obj, 'id')
+
+    async def update_statistic(self, s: AsyncSession, post_id: str, action: str):
+        resp = await s.execute(select(self.model).where(self.model.post_id == post_id))
+        obj = resp.scalars().one_or_none()
+
+        if action == 'like':
+            resp = await s.execute(update(self.model).where(self.model.post_id == post_id).values(
+                like_count=obj.like_count + 1
+            ))
+        else:
+            resp = await s.execute(update(self.model).where(self.model.post_id == post_id).values(
+                watch_count=obj.watch_count + 1
+            ))
+        
+        await s.commit()
+
+    async def check_if_exist_by_post_id(self, s: AsyncSession, post_id: str):
+        resp = await s.execute(select(self.model).where(self.model.post_id == post_id))
+        obj = resp.scalars().one_or_none()
+
+        if obj is None:
+            return False
+        return True
+
+
