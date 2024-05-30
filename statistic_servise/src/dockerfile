@@ -2,7 +2,7 @@ FROM python:3.10
 
 WORKDIR /app
 
-COPY main_servise/src/ /app
+COPY statistic_servise/src/ /app
 COPY common /app/common
 COPY common/statistic_grpc /app
 COPY common/posts_grpc /app

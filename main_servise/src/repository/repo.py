@@ -1,4 +1,4 @@
 from dao_table.user_dao import User
-from repository.main_repository import Repository 
+from common.repository.generic_repository import Repository 
 
 user_repository = Repository[User](User)

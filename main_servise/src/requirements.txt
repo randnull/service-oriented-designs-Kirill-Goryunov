@@ -13,3 +13,5 @@ python-multipart==0.0.9
 grpcio==1.62.1
 grpcio-tools==1.62.1
 protobuf==4.25.3
+aiokafka==0.10.0
+pydantic-settings==2.2.1

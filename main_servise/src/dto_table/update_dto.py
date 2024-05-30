@@ -9,4 +9,3 @@ class UpdateModel(BaseModel):
     email: Optional[str] = None
     birthday: Optional[str] = None
     phone: Optional[str] = None
-

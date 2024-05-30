@@ -38,8 +38,8 @@ entity "statistics" as statistic_table {
   *id : INTEGER <<PK>>
   --
   *post_id : INTEGER <<FK>>
-  *watch_count: VARCHAR
-  *like_count: VARCHAR
+  *watch_count: INTEGER
+  *like_count: INTEGER
 }
 
 post_table ||..o{ user_table

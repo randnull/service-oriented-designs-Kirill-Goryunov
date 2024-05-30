@@ -12,6 +12,19 @@ services:
       - 5432:5432
     networks:
       - api-network
+
+  postgresql-statistic:
+    container_name: postgresql-statistic
+    image: postgres:15.2
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: statistic
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - 5555:5555
+    networks:
+      - api-network
     
   mongodb:
     image: mongo
@@ -45,6 +58,16 @@ services:
     depends_on:
       - postgresql
 
+  migrations-statistic:
+    image: liquibase/liquibase:4.19.0
+    volumes:
+      - ./statistic_servise/migrations:/app
+    command: --defaultsFile=/app/dev.properties update
+    networks:
+      - api-network
+    depends_on:
+      - postgresql-statistic
+
   main-servise-fastapi:
     container_name: "main-servise-fastapi"
     build: 
@@ -54,12 +77,21 @@ services:
       POSTGRES_DB: users
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
+      POSTGRES_HOST: postgresql
       GRPC_PORT: 50051
       GRPC_HOST: posts-grpc
+      KAFKA_HOST: kafka
+      KAFKA_PORT: 29092
+      KAFKA_TOPIC: actions
+      GRPC_HOST_STATISTIC: statistic-servise-fastapi
+      GRPC_PORT_STATISTIC: 50057
     ports:
       - "5005:5000"
     depends_on:
-      - migrations
+      migrations:
+        condition: service_started
+      init-kafka:
+        condition: service_completed_successfully
     networks:
       - api-network
     command: uvicorn main:app --host 0.0.0.0 --port 5000 --reload
@@ -71,12 +103,99 @@ services:
       PORT_SERVISE: 50051
       PORT_DATABASE: 27017
       HOST_DATABASE: mongodb
+    depends_on:
+      main-servise-fastapi:
+        condition: service_started
     ports:
       - "50051:50051"
+    networks:
+      - api-network
+
+  statistic-servise-fastapi:
+    container_name: "statistic-servise-fastapi"
+    build: 
+      context: ./
+      dockerfile: ./statistic_servise/src/dockerfile
+    ports:
+      - "6005:6000"
+      - "50057:50057"
+    environment:
+      POSTGRES_DB: statistic
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_HOST: postgresql-statistic
+      KAFKA_HOST: kafka
+      KAFKA_PORT: 29092
+      KAFKA_TOPIC: actions
+      KAFKA_GROUP_ID: statistic-group
+      GRPC_HOST: posts-grpc
+      GRPC_PORT: 50051
+      GRPC_SERVER_PORT: 50057
+    depends_on:
+      init-kafka:
+        condition: service_completed_successfully
+    networks:
+      - api-network
+    command: uvicorn main:app --host 0.0.0.0 --port 6000 --reload
+
+  kafka:
+    container_name: "statstic-kafka"
+    image: confluentinc/cp-kafka:7.6.0
+    hostname: statstic-kafka
+    restart: unless-stopped
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://statstic-kafka:29092,PLAINTEXT_HOST://localhost:9092'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@statstic-kafka:29093'
+      KAFKA_LISTENERS: 'PLAINTEXT://statstic-kafka:29092,CONTROLLER://statstic-kafka:29093,PLAINTEXT_HOST://0.0.0.0:9092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
+      KAFKA_JMX_PORT: 9997
+    ports:
+      - "9092:9092"
+    networks:
+      - api-network
+
+  kafka-ui:
+    container_name: "statstic-kafka-ui"
+    image: provectuslabs/kafka-ui
+    restart: unless-stopped
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: 'local'
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'statstic-kafka:29092'
+      KAFKA_CLUSTERS_0_METRICS_PORT: 9997
+      DYNAMIC_CONFIG_ENABLED: 'true'
+    ports:
+      - "8081:8080"
+    networks:
+      - api-network
+
+  init-kafka:
+    container_name: "statstic-init-kafka"
+    image: confluentinc/cp-kafka:7.6.0
+    depends_on:
+      - kafka
+    entrypoint: ["/bin/sh", "-c"]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server statstic-kafka:29092 --list
+
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server statstic-kafka:29092 --create --if-not-exists --topic actions --replication-factor 1 --partitions 1
+
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server statstic-kafka:29092 --list
+      "
     networks:
       - api-network
 
 networks:
   api-network:
     name: "api-network"
-
