@@ -91,3 +91,18 @@ class Repository(Generic[T]):
         if obj is None:
             return False
         return True
+
+    async def check_if_like_unique(self, s: AsyncSession, post_id: str, username: str, action: str):
+        resp = await s.execute(
+            select(self.model)
+            .where(
+                self.model.post_id == post_id, 
+                self.model.username == username,
+                self.model.action == action
+                ))
+
+        obj = resp.scalars().one_or_none()
+
+        if obj is None:
+            return True
+        return False

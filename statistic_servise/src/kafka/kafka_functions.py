@@ -24,17 +24,21 @@ async def get_action(msg):
 
     action = data["action"]
     post_id = data["post_id"]
+    username = data["username"]
 
     async with async_session() as session:
         response = grpc_stub.GetByIdPost(posts_pb2.GetById(id=post_id, user_id=0))
 
-        if response.status == 0:
+        check = await statistic_repository.check_if_like_unique(session, post_id, username, action)
+
+        if response.status == 0 and check:
             user_id = str(response.user_id)
 
             new_statistic = StatisticModel(
                     post_id=post_id,
                     action=action,
-                    author=user_id
+                    author=user_id,
+                    username=username
             )
 
             await statistic_repository.add(session, new_statistic)

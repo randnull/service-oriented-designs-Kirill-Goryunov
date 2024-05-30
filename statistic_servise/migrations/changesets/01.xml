@@ -25,6 +25,10 @@
             <column name="author" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
+
+            <column name="username" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
  

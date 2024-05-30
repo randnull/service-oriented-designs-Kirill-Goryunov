@@ -37,9 +37,10 @@ entity "comments" as comment_table {
 entity "statistics" as statistic_table {
   *id : INTEGER <<PK>>
   --
-  *post_id : INTEGER <<FK>>
-  *watch_count: INTEGER
-  *like_count: INTEGER
+  *post_id : VARCHAR <<FK>>
+  *action: VARCHAR
+  *author: VARCHAR
+  *username: VARCHAR
 }
 
 post_table ||..o{ user_table

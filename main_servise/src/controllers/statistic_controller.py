@@ -32,7 +32,8 @@ grpc_port = settings.GRPC_PORT_STATISTIC
 async def send_view(post_id: str, s: AsyncSession = Depends(get_session), current_user: UserModel = Depends(get_user), kafka_producer = Depends(get_producer)):
     statistic_data = {
         "action": "view",
-        "post_id": post_id
+        "post_id": post_id,
+        "username": current_user.username
     }
 
     await Producer.send_to_kafka(kafka_producer, statistic_data, settings.KAFKA_TOPIC)
@@ -45,7 +46,8 @@ async def send_view(post_id: str, s: AsyncSession = Depends(get_session), curren
 async def send_view(post_id: str, s: AsyncSession = Depends(get_session), current_user: UserModel = Depends(get_user), kafka_producer = Depends(get_producer)):
     statistic_data = {
         "action": "like",
-        "post_id": post_id
+        "post_id": post_id,
+        "username": current_user.username
     }
 
     await Producer.send_to_kafka(kafka_producer, statistic_data, settings.KAFKA_TOPIC)
