@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     KAFKA_PORT: str = os.environ['KAFKA_PORT']
     KAFKA_TOPIC: str = os.environ['KAFKA_TOPIC']
     KAFKA_GROUP_ID: str = os.environ['KAFKA_GROUP_ID']
+    GRPC_HOST: str = os.environ['GRPC_HOST']
+    GRPC_PORT: str = os.environ['GRPC_PORT']
+    GRPC_SERVER_PORT: str = os.environ['GRPC_SERVER_PORT']
 
 
 settings = Settings()

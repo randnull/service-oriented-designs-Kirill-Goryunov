@@ -83,6 +83,8 @@ services:
       KAFKA_HOST: kafka
       KAFKA_PORT: 29092
       KAFKA_TOPIC: actions
+      GRPC_HOST_STATISTIC: statistic-servise-fastapi
+      GRPC_PORT_STATISTIC: 50057
     ports:
       - "5005:5000"
     depends_on:
@@ -116,6 +118,7 @@ services:
       dockerfile: ./statistic_servise/src/dockerfile
     ports:
       - "6005:6000"
+      - "50057:50057"
     environment:
       POSTGRES_DB: statistic
       POSTGRES_USER: admin
@@ -125,6 +128,9 @@ services:
       KAFKA_PORT: 29092
       KAFKA_TOPIC: actions
       KAFKA_GROUP_ID: statistic-group
+      GRPC_HOST: posts-grpc
+      GRPC_PORT: 50051
+      GRPC_SERVER_PORT: 50057
     depends_on:
       init-kafka:
         condition: service_completed_successfully

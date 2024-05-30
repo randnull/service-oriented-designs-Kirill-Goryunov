@@ -17,15 +17,15 @@
             <column name="post_id" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
-            
-            <column name="watch_count" type="INTEGER">
+
+            <column name="action" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
 
-            <column name="like_count" type="INTEGER">
+            <column name="author" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
         </createTable>
     </changeSet>
-    
+ 
 </databaseChangeLog>

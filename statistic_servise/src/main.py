@@ -7,9 +7,13 @@ from kafka.kafka_consumer import statistic_consumer
 
 import asyncio
 
+from grpc_server.grpc_server import start_grpc
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    asyncio.create_task(start_grpc())
+
     await statistic_consumer.create_consumer()
 
     asyncio.create_task(statistic_consumer.consume())

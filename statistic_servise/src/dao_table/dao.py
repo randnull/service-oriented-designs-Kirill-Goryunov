@@ -8,13 +8,13 @@ class Statistic(Base):
 
     id = Column(Integer, autoincrement=True, primary_key=True, index=True)
     post_id = Column(String)
-    watch_count = Column(Integer)
-    like_count = Column(Integer)
+    action = Column(String)
+    author = Column(String)
 
     @classmethod
     def to_dao(cls, statistic_dto):
         return Statistic(
             post_id = statistic_dto.post_id,
-            watch_count = statistic_dto.watch_count,
-            like_count = statistic_dto.like_count
+            action = statistic_dto.action,
+            author = statistic_dto.author
         )
