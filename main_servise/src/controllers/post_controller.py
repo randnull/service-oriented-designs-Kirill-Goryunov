@@ -81,14 +81,16 @@ async def updatepost(post_id: str, update_post: NewPostModel, s: AsyncSession = 
     return JSONResponse(content={"message": f"Updated"}, status_code=200)
 
 
-@posts_router.post("/{user_id}", tags=["posts"])
-async def getallposts(user_id: int, page_config: AllPosts, s: AsyncSession = Depends(get_session), current_user: UserModel = Depends(get_user)):
+@posts_router.post("/{user_login}", tags=["posts"])
+async def getallposts(user_login: str, page_config: AllPosts, s: AsyncSession = Depends(get_session), current_user: UserModel = Depends(get_user)):
     if page_config.page_size <= 0:
         return JSONResponse(content={"message": f"Page size equal/less than zero!"}, status_code=400)
     if page_config.page_number <= 0:
         return JSONResponse(content={"message": f"Page number equal/less than zero!"}, status_code=400)
 
-    response = grpc_stub.GetAllPost(posts_pb2.GetAllRequest(user_id=user_id, page_size=page_config.page_size, page_number=page_config.page_number))
+    user_id = await user_repository.get_id_by_username(s, username=user_login)
+
+    response = grpc_stub.GetAllPost(posts_pb2.GetAllRequest(user_id=int(user_id), page_size=page_config.page_size, page_number=page_config.page_number))
 
     posts_from_grpc = response.posts
 
