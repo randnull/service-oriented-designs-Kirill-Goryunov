@@ -15,3 +15,4 @@ grpcio-tools==1.62.1
 protobuf==4.25.3
 aiokafka==0.10.0
 pydantic-settings==2.2.1
+requests==2.31.0
