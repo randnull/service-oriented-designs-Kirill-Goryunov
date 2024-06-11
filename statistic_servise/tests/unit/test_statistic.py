@@ -6,11 +6,11 @@ from statistic_servise.src.dto_table.dto import StatisticModel
 class TestObject:
     def test_to_dto(self):
         model_dao = Statistic(
-            id=1,
-            post_id="1",
-            action="like",
-            author="name",
-            username="name2"
+            id = 1,
+            post_id = "1",
+            action = "like",
+            author = "name",
+            username = "name2"
         )
 
         dto_model = StatisticModel.to_dto(model_dao)
@@ -42,4 +42,7 @@ class TestObject:
             username="name2"
         )
 
-        assert dao_model == dao_expect_model
+        assert dao_model.username == dao_expect_model.username
+        assert dao_model.action == dao_expect_model.action
+        assert dao_model.author == dao_expect_model.author
+        assert dao_model.post_id == dao_expect_model.post_id

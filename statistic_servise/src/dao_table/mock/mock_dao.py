@@ -1,8 +1,13 @@
 from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import declarative_base
 
 
-class Statistic():
+Base = declarative_base()
+
+
+class Statistic(Base):
     __tablename__ = "statistic"
+
 
     id = Column(Integer, autoincrement=True, primary_key=True, index=True)
     post_id = Column(String)
