@@ -4,6 +4,7 @@ import json
 from time import sleep
 
 class TestE2E:
+    @pytest.mark.skip(reason="system test")
     def make_new_user(self, username, password):
         register_data = {
             "username": username,
@@ -14,7 +15,7 @@ class TestE2E:
         reg_response = requests.post("http://localhost:5005/register", json=register_data)
 
         assert reg_response.status_code in [200, 409]
-        
+
         login_data = {
             "grant_type": "",
             "username": username,
@@ -36,7 +37,7 @@ class TestE2E:
 
         return header
 
-
+    @pytest.mark.skip(reason="system test")
     def test_posts(self):
         username = "test_user"
         password = "test_password"
