@@ -33,6 +33,13 @@ func NewServer(repo RepositoryInterface) *Server {
 	}
 }
 
+func min(a int, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
 
 func (s *Server) CreatePost(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
 	post_data := modals.PostData{
