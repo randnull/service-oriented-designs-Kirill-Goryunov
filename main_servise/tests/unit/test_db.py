@@ -6,7 +6,7 @@ import pytest
 
 
 class TestDB:
-    @pytest.mark.asyncio
+    @pytest.fixture
     async def test_db(self):
         mock_model_object = MagicMock()
         mock_model_object.to_dao = MagicMock()
