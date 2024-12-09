@@ -10,6 +10,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
+//go:generate mockgen -source=handlers.go -destination=mock/handlers.go
+
 type RepositoryInterface interface {
 	Create(post modals.PostData) (string, error)
 	Delete(id string, user_id int) error
@@ -29,6 +31,13 @@ func NewServer(repo RepositoryInterface) *Server {
 	return &Server{
 		repo: repo,
 	}
+}
+
+func min(a int, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
 
 
